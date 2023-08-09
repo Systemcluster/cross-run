@@ -7,7 +7,7 @@ import { program } from 'commander'
 import dotenv from 'dotenv'
 import expand from 'dotenv-expand'
 
-import { run } from './index.js'
+import { RunMode, run } from './index.js'
 
 program
     .name('cross-run')
@@ -17,6 +17,7 @@ program
     .option('-s, --strict', 'Error when encountering unknown environment variables during expansion', false)
     .option('-m, --multiple', 'Run multiple commands sequentially', false)
     .option('-p, --parallel', 'Run multiple commands in parallel', false)
+    .option('-r, --raw', 'Output the raw output of commands', false)
     .allowExcessArguments(true)
     .passThroughOptions(true)
 
@@ -49,9 +50,16 @@ if (opts.multiple && opts.parallel) {
     }
 }
 
+const config = {
+    mode: (opts.multiple ? 'multiple' : opts.parallel ? 'parallel' : 'single') as RunMode,
+    strict: !!opts.strict,
+    raw: !!opts.raw,
+}
 try {
-    await run(args, opts.multiple ? 'multiple' : opts.parallel ? 'parallel' : 'single', opts.strict)
+    await run(args, config)
 } catch (error) {
-    console.error(error)
+    if (error instanceof Error) {
+        console.error(error.message)
+    }
     process.exitCode = 1
 }
