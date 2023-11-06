@@ -32,7 +32,8 @@
         "check:types": "tsc --noEmit --emitDeclarationOnly false",
         "check:fix": "eslint --fix src",
         "build": "npm run clean && npm run prepare",
-        "test:run": "npm run build && node dist/bin.js --help && node dist/bin.js -e echo $TEMP test && node dist/bin.js TEST=\"foo bar\" echo %TEST% --test && node dist/bin.js -p \"echo $TEMP test\" && node dist/bin.js -p \"echo $TEMP test 1\" \"echo $TEMP test 2\""
+        "test": "npm run build && node dist/bin.js -p npm:test:run",
+        "test:run": "node dist/bin.js --help && node dist/bin.js -e echo $TEMP test && node dist/bin.js TEST=\"foo bar\" echo %TEST% --test && node dist/bin.js -p \"echo $TEMP test\" && node dist/bin.js -p \"echo $TEMP test 1\" \"echo $TEMP test 2\""
     },
     "dependencies": {
         "chalk": "^5.3.0",

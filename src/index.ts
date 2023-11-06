@@ -13,6 +13,7 @@ export interface Config {
     mode: RunMode
     strict: boolean
     raw: boolean
+    verbose: boolean
 }
 
 export interface Prefix {
@@ -38,6 +39,14 @@ export const expandEnv = (string: string, env: Record<string, string>, strict: b
 
 const spawnCommand = async (command: string, args: string[], env: Record<string, string>, config: Config, prefix: Prefix) => {
     return new Promise<0>((resolve, reject) => {
+        if (config.verbose) {
+            if (prefix.text !== undefined) {
+                process.stderr.write(prefix.color(` ${prefix.text} `))
+                process.stderr.write(' ')
+            }
+            process.stderr.write(chalk.gray(`${command} ${args.join(' ')}`))
+            process.stderr.write('\n')
+        }
         const child = child_process.spawn(command, args, {
             stdio: 'pipe',
             shell: true,
