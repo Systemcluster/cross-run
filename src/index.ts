@@ -257,15 +257,18 @@ const detectPackageManager = (cwd?: string, fallback: PackageManager = 'npm'): s
     const pms: PackageManager[] = ['yarn', 'pnpm', 'npm']
     for (const pm of pms) {
         if (checkLockFile(cwd, pm)) {
-            const path = checkInstallation(pm)
-            if (path !== null) {
-                return path
+            const resolved = checkInstallation(pm)
+            if (resolved !== null) {
+                return resolved
             }
         }
     }
-    const path = checkInstallation(fallback)
-    if (path !== null) {
-        return path
+    if (cwd !== path.resolve(cwd, '..')) {
+        return detectPackageManager(path.resolve(cwd, '..'), fallback)
+    }
+    const resolved = checkInstallation(fallback)
+    if (resolved !== null) {
+        return resolved
     }
     return null
 }
