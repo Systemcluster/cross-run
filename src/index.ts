@@ -1,5 +1,6 @@
 import child_process from 'node:child_process'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 
 import chalk, { ChalkInstance } from 'chalk'
@@ -37,17 +38,22 @@ export const expandEnv = (string: string, env: Record<string, string>, strict: b
         .replaceAll(/%([a-zA-Z0-9-_]+)%/gu, (_, name) => `${getEnv(name)}`)
 }
 
+export const escapePath = (path: string): string => {
+    return os.platform() !== 'win32' ? path.replaceAll(/(\s+)/gu, '\\$1') : path.replaceAll(/(\s)/gu, `"$1"`)
+}
+
 const spawnCommand = async (command: string, args: string[], env: Record<string, string>, config: Config, prefix: Prefix) => {
     return new Promise<0>((resolve, reject) => {
+        const escapedCommand = escapePath(command)
         if (config.verbose) {
             if (prefix.text !== undefined) {
                 process.stderr.write(prefix.color(` ${prefix.text} `))
                 process.stderr.write(' ')
             }
-            process.stderr.write(chalk.gray(`${command} ${args.join(' ')}`))
+            process.stderr.write(chalk.gray(`${escapedCommand} ${args.join(' ')}`))
             process.stderr.write('\n')
         }
-        const child = child_process.spawn(command, args, {
+        const child = child_process.spawn(escapedCommand, args, {
             stdio: 'pipe',
             shell: true,
             env,
