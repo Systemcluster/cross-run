@@ -7,7 +7,7 @@ import { program } from 'commander'
 import dotenv from 'dotenv'
 import expand from 'dotenv-expand'
 
-import { RunMode, run } from './index.js'
+import { PackageManager, RunMode, run } from './index.js'
 
 program
     .name('cross-run')
@@ -19,6 +19,7 @@ program
     .option('-p, --parallel', 'Run multiple commands in parallel', false)
     .option('-r, --raw', 'Output the raw output of commands', false)
     .option('-v, --verbose', 'Output verbose information', false)
+    .option('-o --override-pm [pm]', 'Override the package manager to use')
     .allowExcessArguments(true)
     .passThroughOptions(true)
 
@@ -51,11 +52,16 @@ if (opts.multiple && opts.parallel) {
     }
 }
 
+if (opts.overridePm && !['npm', 'yarn', 'pnpm'].includes(opts.overridePm)) {
+    throw new Error(`Invalid package manager ${opts.overridePm}`)
+}
+
 const config = {
     mode: (opts.multiple ? 'multiple' : opts.parallel ? 'parallel' : 'single') as RunMode,
     strict: !!opts.strict,
     raw: !!opts.raw,
     verbose: !!opts.verbose,
+    pm: opts.overridePm as PackageManager | null,
 }
 try {
     await run(args, config)

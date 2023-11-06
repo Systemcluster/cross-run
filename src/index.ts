@@ -10,11 +10,14 @@ import which from 'which'
 
 export type RunMode = 'single' | 'multiple' | 'parallel'
 
+export type PackageManager = 'npm' | 'yarn' | 'pnpm'
+
 export interface Config {
     mode: RunMode
     strict: boolean
     raw: boolean
     verbose: boolean
+    pm: PackageManager | null
 }
 
 export interface Prefix {
@@ -190,7 +193,7 @@ export const run = async (args: string[], config: Config) => {
     if (args.length === 0) {
         return
     }
-    const pm = detectPackageManager()
+    const pm = config.pm ? checkInstallation(config.pm) : detectPackageManager()
     switch (config.mode) {
         case 'single': {
             const expanded = args.map((arg) => expandEnv(arg, env, config.strict))
@@ -230,8 +233,6 @@ export const run = async (args: string[], config: Config) => {
         }
     }
 }
-
-type PackageManager = 'npm' | 'yarn' | 'pnpm'
 
 const checkLockFile = (root: string, pm: PackageManager) => {
     switch (pm) {
