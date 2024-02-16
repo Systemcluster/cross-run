@@ -19,7 +19,7 @@ program
     .option('-p, --parallel', 'Run multiple commands in parallel', false)
     .option('-r, --raw', 'Output the raw output of commands', false)
     .option('-v, --verbose', 'Output verbose information', false)
-    .option('-o --override-pm [pm]', 'Override the package manager to use')
+    .option('-o, --override-pm [pm]', 'Override the package manager to use')
     .allowExcessArguments(true)
     .passThroughOptions(true)
 
