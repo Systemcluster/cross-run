@@ -5,7 +5,7 @@ import path from 'node:path'
 
 import chalk, { ChalkInstance } from 'chalk'
 import { minimatch } from 'minimatch'
-import shlex from 'shlex'
+import * as shlex from 'shlex'
 import which from 'which'
 
 export type RunMode = 'single' | 'multiple' | 'parallel'
